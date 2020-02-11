@@ -36,7 +36,7 @@ end
 # (f::FastDense)(x,p) = f.σ.(reshape(uview(p,1:(f.out*f.in)),f.out,f.in)*x .+ uview(p,(f.out*f.in+1):lastindex(p)))
 (f::FastDense)(x,p) = f.σ.(reshape(p[1:(f.out*f.in)],f.out,f.in)*x .+ p[(f.out*f.in+1):end])
 ZygoteRules.@adjoint function (f::FastDense)(x,p)
-  W = p[reshape(1:(f.out*f.in),f.out,f.in)] # @view after BLAS fixes
+  W = @view p[reshape(1:(f.out*f.in),f.out,f.in)]
   b = p[(f.out*f.in+1):end]
   r = W*x .+ b
   y = f.σ.(r)
